@@ -402,7 +402,7 @@ void main() {
      salt5 = pow(smoothstep(.96, .999, fract(salt5*1.3)), 5.);
     salt5 = salt5;
     //res = .06 + res*(.94 - .06);
-    res.rgb += 1.*(.1*salt22 + 0.036*salt5);
+    res.rgb += .66*(.1*salt22 + 0.036*salt5);
     //res.rgb = 1. - (1.-res.rgb)*(1.-.06*salt5);
     //////
 

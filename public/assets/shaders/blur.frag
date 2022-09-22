@@ -247,7 +247,6 @@ void main_1() {
     uv = vUv;
     
     vec4 texel = texture2D( tDiffuse, uv);
-    vec4 texel2 = texture2D( dmap, uv);
 
     float ff = fff(uv*vec2(1., 1.)*3.+seed*14., seed);
     float ffx = -1. + 2.*smoothstep(0., 1., fff(uv*vec2(1., 1.)*.3+seed*3., seed+3.413));
@@ -286,10 +285,7 @@ void main_1() {
     vec3 colorg = gaussianBlur(tDiffuse, uv + ooi*0.*ffc*.06*vece, ooi*ffc*15.*amp/1000.*vece ); //*uu*hash12(uv)
     vec3 colorb = gaussianBlur(tDiffuse, uv - ooi*ffc*.06*vece, ooi*ffc*15.*amp/1000.*vece ); //*uu*hash12(uv)
     vec3 color = vec3(colorr.r, colorg.g, colorb.b);
-    gl_FragColor = vec4(vec3(uu.xy, 0.), 1.);
-    gl_FragColor = vec4(vec3(uu*hash12(uv), 0.), 1.);
-    gl_FragColor = vec4(vec3(ffb1), 1.);
-    gl_FragColor = vec4(texel.rgb, 1.);
+
     gl_FragColor = vec4(color.rgb, 1.);
 
 }
@@ -302,8 +298,6 @@ void main_2() {
     uv = vUv;
     
     vec4 texel = texture2D( tDiffuse, uv);
-    vec4 texel2 = texture2D( dmap, uv);
-    
 
     float ff = fff(uv*vec2(1., 1.)*3.+seed*14., seed);
     float ffx = -1. + 2.*smoothstep(0., 1., fff(uv*vec2(1., 1.)*1.3+seed*3., seed+3.413));
@@ -352,11 +346,7 @@ void main_2() {
     vec3 colorg = gaussianBlur(tDiffuse, uv + ooi*0.*ffc*.0*udi, 4.5*ooi*(ffc)*grnsh*1.40*amp/1000.*udi ); //*uu*hash12(uv)
     vec3 colorb = gaussianBlur(tDiffuse, uv - ooi*ffc*.0*udi, 4.5*ooi*(ffc)*blush*1.40*amp/1000.*udi ); //*uu*hash12(uv)
     vec3 color = vec3(colorr.r, colorg.g, colorb.b);
-    gl_FragColor = vec4(vec3(uu.xy, 0.), 1.);
-    gl_FragColor = vec4(vec3(uu*hash12(uv), 0.), 1.);
-    gl_FragColor = vec4(vec3(ooi), 1.);
-    gl_FragColor = vec4(texel.rgb, 1.);
-    gl_FragColor = vec4(vec3(hash12(uv*100.)), 1.);
+
     gl_FragColor = vec4(color.rgb, 1.);
 
 }
@@ -370,7 +360,7 @@ void main_3() {
     uv = vUv;
     
     vec4 texel = texture2D( tDiffuse, uv);
-    vec4 texel2 = texture2D( dmap, uv);
+    // vec4 texel2 = texture2D( dmap, uv);
     
 
     float ff = fff(uv*vec2(1., 1.)*3.+seed*14., seed);
@@ -385,7 +375,6 @@ void main_3() {
     float ffc2  = -1. + 2.*pow(smoothstep(0., 1., fff(uv*vec2(1., 15.)*1.21+seed*2.67+vec2(ffb1, ffb2), seed*1.23+7.56)), 3.);
 
 
-    float ang = ff*1.;
     float ux = smoothstep(0., 1., ffx);
     float uy = smoothstep(0., 1., ffy);
     vec2 uu = vec2(2.*ux-1., 2.*uy-1.);
@@ -424,11 +413,6 @@ void main_3() {
     vec3 colorg = gaussianBlur(tDiffuse, uv + ooi*0.*ffc*.08*udi, 4.5*ooi*ffc*grnsh*1.40*amp/1000.*udi ); //*uu*hash12(uv)
     vec3 colorb = gaussianBlur(tDiffuse, uv - ooi*ffc*.08*udi, 4.5*ooi*ffc*blush*1.40*amp/1000.*udi ); //*uu*hash12(uv)
     vec3 color = vec3(colorr.r, colorg.g, colorb.b);
-    gl_FragColor = vec4(vec3(uu.xy, 0.), 1.);
-    gl_FragColor = vec4(vec3(uu*hash12(uv), 0.), 1.);
-    gl_FragColor = vec4(vec3(ooi), 1.);
-    gl_FragColor = vec4(texel.rgb, 1.);
-    gl_FragColor = vec4(vec3(hash12(uv*100.)), 1.);
     gl_FragColor = vec4(color.rgb, 1.);
 
 }
@@ -445,10 +429,4 @@ void main(){
     else if(variant < 2.5){
         main_3();
     }
-    // vec2 xy = gl_FragCoord.xy;
-    // vec2 uv = xy / resolution;
-
-    // float aa = sin(12.31);
-    // gl_FragColor = vec4(vec3(.5+.5*(sin(uv.x*3.1415*2.))), 1.);
-    // gl_FragColor = vec4(vec3(hash12Noise(floor(gl_FragCoord.xy/21.))), 1.);
 }

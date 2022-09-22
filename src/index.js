@@ -12,6 +12,7 @@ let gethobbypoints = hobbylib.gethobbypoints;
 let myVec = require("./myvec");
 let pixelRatio = 4;
 pixelRatio = window.devicePixelRatio;
+pixelRatio = 2;
 let iterationCount = 0;
 
 let thevariant; // = Math.floor(fxrand()*3.);
@@ -572,75 +573,14 @@ function reset() {
         hsv[1] = map(fxrand(), 0, 1, 0.14, 0.315)
         //hsv[2] = map(fxrand(), 0, 1, 0.2, 0.8)
     }
-    if (sunPos[1] > horizon) {
-        //hsv[2] = map(fxrand(), 0, 1, 0.4, 0.7)
-    }
-
-    if (isDark) {
-        hsv[2] *= .5;
-    }
-
-    backgroundColor = HSLtoRGB(hsv[0], hsv[1], hsv[2])
-
-    // while(myDot(backgroundColor, [0,1,0]) > 0.5){    hsv = [Math.pow(fxrand()*.5,
-    // 2), map(fxrand(), 0, 1, 0.2, 0.36), map(fxrand(), 0, 1, 0.5, 0.7)]
-    // backgroundColor = HSVtoRGB(hsv[0], hsv[1], hsv[2]) } backgroundColor[2] =
-    // Math.pow(backgroundColor[2], .6)
 
     sunColor = [
         map(fxrand(), 0, 1, 0.992, 1.036) % 1.0,
         map(fxrand(), 0, 1, 0.9, .96),
         map(fxrand(), 0, 1, .8, 1.0)
     ]
-    if (sunColor[0] > .13 && sunColor[0] < .98) {
-        //sunColor[1] *= .7; sunColor[2] *= .7;
-    }
-    sunColor = HSVtoRGB(sunColor[0], sunColor[1], sunColor[2]);
-    sunColor = [
-        255. * sunColor[0],
-        255. * sunColor[1],
-        255. * sunColor[2]
-    ]
-    if (isDark) {
-        sunColor = HSLtoRGB(
-            map(fxrand(), 0, 1, 0.5, .7),
-            map(fxrand(), 0, 1, 0.1, .2),
-            map(fxrand(), 0, 1, .4, .6)
-        );
-        sunColor = [
-            255. * sunColor[0],
-            255. * sunColor[1],
-            255. * sunColor[2]
-        ]
-        sunPos[1] = map(fxrand(), 0, 1, -.4, -.3);
-        sunSpread = map(fxrand(), 0, 1, 1.1, 1.1);
-    }
-    // sunColor = [255.*Math.pow(backgroundColor[0], .35),
-    // 255.*Math.pow(backgroundColor[1], 2.3), 255.*Math.pow(backgroundColor[2],
-    // 2.3)]
-    if ((backgroundColor[0] + backgroundColor[1] + backgroundColor[2]) / 3 < .35) {
-        // sunColor = HSVtoRGB(map(fxrand(), 0, 1, 0.4, .61), map(fxrand(), 0, 1, 0.2,
-        // .34), map(fxrand(), 0, 1, .6, 1.0)); sunColor = [255.*sunColor[0],
-        // 255.*sunColor[1], 255.*sunColor[2]]
-    }
 
-    /*if(ww/wh > 1){
-        baseWidth = Math.round(ress * ww/wh)
-        baseHeight = ress
-    }
-    else{
-        baseWidth = ress
-        baseHeight = Math.round(ress * wh/ww)
-    }*/
-
-    //groundclr.a[3] = 0; resizeCanvas(ww, wh, true); pg = createGraphics(ww, wh);
-
-    particlePositions = [];
-    particleColors = [];
-    particleSizes = [];
-    particleAngles = [];
-    particleIndices = [];
-
+  
     loadShadersAndData();
 
 }
@@ -1298,16 +1238,16 @@ function loadData() {
 
     renderer.autoClear = true;
 
-    
-    // renderer2 = new THREE.WebGLRenderer(
-    //     {preserveDrawingBuffer: true, antialias: true}
-    // );
-    // renderer2.autoClear = true;
-    // renderer2.setPixelRatio(pixelRatio);
-    // renderer2.setSize(canvasWidth, canvasHeight);
-
-    // baseWidth = canvasWidth;
-    // baseHeight = canvasHeight;
+    if(isMobile()){
+        pixelRatio = 1 + 0*window.devicePixelRatio;
+    }
+    else{
+        pixelRatio = 1;
+        // if(saveFlag){
+        //     pixelRatio = 2;
+        // }
+        baseWidth = baseHeight = 2000;
+    }
 
     rawTarget = new THREE.WebGLRenderTarget(
         baseWidth * pixelRatio,
@@ -1324,17 +1264,13 @@ function loadData() {
         baseHeight * pixelRatio
     );
 
-    blurTargetV = new THREE.WebGLRenderTarget(
-        baseWidth * pixelRatio,
-        baseHeight * pixelRatio
-    );
 
 
 
     renderer.autoClearColor = true;
     //renderer.setPixelRatio( 1.0 );
-    if(isFxpreview){
-        renderer.setPixelRatio(window.devicePixelRatio);
+    if(isFxpreview || isMobile()){
+        renderer.setPixelRatio(pixelRatio);
         renderer.setSize(canvasWidth, canvasHeight);
     }
     else{
@@ -1688,110 +1624,6 @@ let camera_positions = [
     new THREE.Vector3(0, 0, 800)
 ]
 
-function animate() {
-    // renderer.setRenderTarget(null); renderer.clear(); orbitcontrols.update();
-    // swirlmaterial.uniforms.uTime.value = ttime;
-    // ttime += dtime;
-
-    if (idwn || true) {
-        // orbitcontrols.update();
-    } else {
-        let intdur = 3;
-        let tttime = ttime % (camera_positions.length * intdur);
-        let transition = 2;
-
-        for (let to = 0; to < camera_positions.length; to++) {
-            let li = map(
-                to,
-                0,
-                camera_positions.length - 1,
-                intdur,
-                intdur * camera_positions.length
-            );
-            if (tttime < li) {
-                let ctime = power(constrain(map(tttime, li - transition, li, 0, 1), 0, 1), 2);
-                camera.position.x = lerp(
-                    camera_positions[to].x,
-                    camera_positions[(to + 1) % camera_positions.length].x,
-                    ctime
-                );
-                camera.position.y = lerp(
-                    camera_positions[to].y,
-                    camera_positions[(to + 1) % camera_positions.length].y,
-                    ctime
-                );
-                camera.position.z = lerp(
-                    camera_positions[to].z,
-                    camera_positions[(to + 1) % camera_positions.length].z,
-                    ctime
-                );
-                break;
-            }
-        }
-
-        let dd = Math.sqrt(
-            camera.position.x * camera.position.x + camera.position.y * camera.position.y + camera.position.z * camera.position.z
-        );
-        camera.position.x /= dd;
-        camera.position.y /= dd;
-        camera.position.z /= dd;
-        camera.position.x *= 500;
-        camera.position.y *= 500;
-        camera.position.z *= 500;
-        camera.lookAt(new THREE.Vector3(0, 0, 0))
-    }
-    renderRoutine()
-    //renderer2.render(scene, camera);
-
-    //composer.readBuffer.tpostPass.uniforms.tDiffuse2.value = rawTarget.texture;
-
-    // composer.render();
-
-    requestAnimationFrame(animate)
-}
-
-function lines() {
-    var nn = Math.round(map(fxrand(), 0, 1, 310, 320)) * .1
-
-    for (var k = 0; k < nn * .1; k++) {
-        var brr = map(fxrand(), 0, 1, 0.01, 0.15);
-        x2 = map(fxrand(), 0, 1, -ress / 2 * .05, ress / 2 * .05);
-        y2 = map(Math.pow(fxrand(), 3), 0, 1, -ress / 2 * .05, ress / 2 * .05);
-        x1 = map(fxrand(), 0, 1, -ress / 2 * .4, ress / 2 * .4);
-        y1 = map(Math.pow(fxrand(), 3), 0, 1, -ress / 2 * .4, ress / 2 * .4);
-        // drawLine(    new THREE.Vector2(x1, y1),    new THREE.Vector2(x2, y2),
-        // map(fxrand(), 0, 1, 0.3, 0.6)*1.8, 1.5, [brr*4,brr*.1,brr*.1], 33 );
-    }
-
-    var x1 = map(fxrand(), 0, 1, -ress / 2 * .9, ress / 2 * .9);
-    var y1 = map(fxrand(), 0, 1, -ress / 2 * .9, ress / 2 * .9);
-    var x2 = map(fxrand(), 0, 1, -ress / 2 * .9, ress / 2 * .9);
-    var y2 = map(fxrand(), 0, 1, -ress / 2 * .9, ress / 2 * .9);
-    for (var k = 0; k < nn; k++) {
-        var brr = map(fxrand(), 0, 1, 0.01, 0.15);
-        x2 = x1;
-        y2 = y1;
-        x1 = map(power(fxrand(), 3), 0, 1, -ress / 2 * .9, ress / 2 * .9);
-        y1 = map(power(fxrand(), 3), 0, 1, -ress / 2 * .9, ress / 2 * .9);
-        if (Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)) < 1200) {
-            drawLine(
-                new THREE.Vector2(x1, y1),
-                new THREE.Vector2(x2, y2),
-                map(fxrand(), 0, 1, 0.3, 0.6),
-                1.1,
-                [
-                    brr, brr, brr
-                ],
-                33
-            );
-        }
-        // drawLine(    new THREE.Vector2(map(fxrand(), 0, 1, -ress/2*.1, ress/2*.1),
-        // map(fxrand(), 0, 1, -ress/2*.1, ress/2*.1)),    new
-        // THREE.Vector2(map(fxrand(), 0, 1, -ress/2*.9, ress/2*.9), map(fxrand(), 0, 1,
-        // -ress/2*.9, ress/2*.9)),    map(fxrand(), 0, 1, 0.3, 0.6), 1.5,
-        // [brr,brr,brr], 24 );
-    }
-}
 
 function repositionCanvas(canvas) {
     var win = window;
@@ -1919,45 +1751,8 @@ function onWindowResize() {
 
         ww = canvasWidth
         wh = canvasHeight
-        // baseWidth = ww;
-        // baseHeight = wh;
-
-        // winScale = canvasWidth / ress; camera.left = -canvasWidth/2 / winScale;
-        // camera.right = +canvasWidth/2 / winScale; camera.top = +canvasHeight/2 /
-        // winScale; camera.bottom = -canvasHeight/2 / winScale;
-        // camera.updateProjectionMatrix();
-
-        // postPass.uniforms.resolution.value = [
-        //     canvasWidth * pixelRatio,
-        //     canvasHeight * pixelRatio
-        // ]
-        // // fxaaPass.uniforms[ 'resolution' ].value.x = 1 / ( window.innerWidth *
-        // // pixelRatio ); fxaaPass.uniforms[ 'resolution' ].value.y = 1 / (
-        // // window.innerHeight * pixelRatio );
-        // fxaaPass.uniforms.resolution.value = [
-        //     1 / (canvasWidth * pixelRatio),
-        //     1 / (canvasHeight * pixelRatio)
-        // ];
-        // renderer.setPixelRatio(pixelRatio);
-        //renderer.setPixelRatio( 1.0000 );
-
-        // renderer.setClearColor( new THREE.Color(palette[0][0], palette[0][1],
-        // palette[0][2]), 1 ); renderer.clear(); renderer.domElement.id = "cnvs";
-        // renderer.domElement.style.position = "absolute";
-        // renderer.domElement.style.left = "0px"; renderer.domElement.style.top =
-        // "0px";
         repositionCanvas(renderer.domElement);
 
-        // points.material.uniforms.u_time.value = 0;
-        // points.material.uniforms.u_scrollscale.value = scrollscale;
-        // console.log(winScale); points.material.uniforms.u_winscale.value =
-        // winScale*pixelRatio; const composer = new EffectComposer(
-        // renderer ); const renderPass = new RenderPass( scene, camera );
-        // PostProcShader.uniforms.resolution.value =
-        // [canvasWidth*pixelRatio, canvasHeight*pixelRatio];
-        // const luminosityPass = new ShaderPass( PostProcShader ); composer.addPass(
-        // renderPass ); composer.addPass( luminosityPass ); composer.render();
-        // renderer.render( scene, camera );
     } else {
         // reset();
     }

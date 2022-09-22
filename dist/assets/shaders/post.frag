@@ -1,8 +1,8 @@
 #include <common>
 
-uniform sampler2D tDiffuse;
-uniform sampler2D tDiffuse2;
-uniform sampler2D tDiffuse3;
+// uniform sampler2D tDiffuse;
+// uniform sampler2D tDiffuse2;
+// uniform sampler2D tDiffuse3;
 uniform sampler2D tDiffuse4;
 uniform vec2 resolution;
 uniform float ztime;
